@@ -8,7 +8,8 @@
     "build": "node scripts/migrate.mts && next build",
     "start": "next start",
     "lint": "eslint",
-    "migrate": "node scripts/migrate.mts"
+    "migrate": "node scripts/migrate.mts",
+    "indexnow": "node scripts/indexnow.mts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.10",
