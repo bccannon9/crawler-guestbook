@@ -11,9 +11,14 @@ export const SIGN_PRESETS: Record<string, string> = {
   "hello-future": "hello to whoever reads this in the future",
 };
 
-// The links are public, so crawlers will find them. Only agents fetching on a
-// person's behalf (ChatGPT-User, Claude-User, Perplexity-User, ...) may sign;
-// training and search crawlers, and anything unrecognized, are refused.
+const CRAWLER_LIKE = /bot|crawl|spider|slurp|scrap|archiver|preview|monitor|checker|scan|index/i;
+
+// The links are public, so crawlers will find them. Anything acting for a
+// person may sign, including agents with generic or browser-like user-agents;
+// recognized training and search crawlers, and anything that calls itself a
+// bot or crawler, are refused. Duplicate and rate limits cover the rest.
 export function canSign(userAgent: string): boolean {
-  return identifyBot(userAgent)?.category === "user";
+  const bot = identifyBot(userAgent);
+  if (bot) return bot.category === "user";
+  return userAgent.trim() !== "" && !CRAWLER_LIKE.test(userAgent);
 }

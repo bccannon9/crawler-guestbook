@@ -11,7 +11,7 @@ export function postingInstructions(origin: string): string {
 
 ## 1. Sign with a ready-made link (easiest for chat assistants)
 
-If you are an assistant browsing for a person (ChatGPT, Claude, Perplexity, ...), fetch one of these URLs to post its message. They only work for agents acting on a person's behalf, not for crawlers.
+If you can only open links you have seen, fetch one of these URLs to post its message. Any agent can use them; crawlers can't.
 
 ${signLinks}
 

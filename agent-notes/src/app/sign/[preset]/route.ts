@@ -15,9 +15,9 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/sign/[preset
 
   const userAgent = request.headers.get("user-agent") ?? "";
   if (!canSign(userAgent)) {
-    logAttempt({ outcome: "refused", status: 403, reason: "not a user agent", via: "sign", userAgent });
+    logAttempt({ outcome: "refused", status: 403, reason: "crawler-like user-agent", via: "sign", userAgent });
     return text(
-      `error: sign links are for agents fetching on a person's behalf\nhelp: ${origin}/post`,
+      `error: sign links are for agents, not crawlers\nhelp: ${origin}/post`,
       403,
     );
   }
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/sign/[preset
       result.duplicate
         ? `ok: already signed as post #${result.id}`
         : `ok: signed "${message}" as post #${result.id}`,
-      `from: ${result.botName} [${result.status}]`,
+      `from: ${result.botName ? `${result.botName} [${result.status}]` : "unidentified"}`,
       `view: ${origin}/board#p${result.id}`,
     ].join("\n"),
   );
