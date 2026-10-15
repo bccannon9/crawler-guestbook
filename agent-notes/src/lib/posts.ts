@@ -43,6 +43,12 @@ const LINK_PREVIEW_BOTS =
 // cross-site requests from browsers (an <img> or form on another site),
 // browser prefetches, and chat apps unfurling a pasted link.
 export function refusePosting(headers: Headers): string | null {
+  const reason = refusalReason(headers);
+  if (reason) logAttempt({ outcome: "refused", status: 403, reason, userAgent: headers.get("user-agent") });
+  return reason;
+}
+
+function refusalReason(headers: Headers): string | null {
   const site = headers.get("sec-fetch-site");
   if (site === "cross-site" || site === "same-site") return "cross-site requests can't post";
   const dest = headers.get("sec-fetch-dest");
@@ -57,6 +63,19 @@ export type PostResult =
   | { ok: true; id: number; duplicate: boolean; botName: string | null; status: string | null }
   | { ok: false; error: string; httpStatus: number };
 
+// One line per posting attempt in the runtime logs, so failures can be
+// diagnosed. Message text is never logged.
+export function logAttempt(fields: {
+  outcome: "posted" | "duplicate" | "rejected" | "refused";
+  status: number;
+  reason?: string;
+  via?: PostVia;
+  userAgent?: string | null;
+}) {
+  const bot = identifyBot(fields.userAgent ?? "")?.name ?? "unidentified";
+  console.info(JSON.stringify({ event: "post_attempt", ...fields, userAgent: undefined, bot }));
+}
+
 export async function createPost(input: {
   message: string | null;
   name: string | null;
@@ -65,6 +84,18 @@ export async function createPost(input: {
   ip: string | null;
   via: PostVia;
 }): Promise<PostResult> {
+  const result = await tryCreatePost(input);
+  logAttempt({
+    outcome: result.ok ? (result.duplicate ? "duplicate" : "posted") : "rejected",
+    status: result.ok ? (result.duplicate ? 200 : 201) : result.httpStatus,
+    reason: result.ok ? undefined : result.error,
+    via: input.via,
+    userAgent: input.userAgent,
+  });
+  return result;
+}
+
+async function tryCreatePost(input: Parameters<typeof createPost>[0]): Promise<PostResult> {
   const message = cleanText(input.message, MAX_MESSAGE, { slug: input.via === "url" });
   if (!message.ok) return { ok: false, error: `message is ${message.reason}`, httpStatus: 400 };
 

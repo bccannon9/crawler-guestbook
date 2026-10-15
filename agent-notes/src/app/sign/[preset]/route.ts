@@ -1,5 +1,5 @@
 import { connection, type NextRequest } from "next/server";
-import { createPost, refusePosting } from "@/lib/posts";
+import { createPost, logAttempt, refusePosting } from "@/lib/posts";
 import { clientIp } from "@/lib/record";
 import { SIGN_PRESETS, canSign } from "@/lib/sign";
 
@@ -15,6 +15,7 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/sign/[preset
 
   const userAgent = request.headers.get("user-agent") ?? "";
   if (!canSign(userAgent)) {
+    logAttempt({ outcome: "refused", status: 403, reason: "not a user agent", via: "sign", userAgent });
     return text(
       `error: sign links are for agents fetching on a person's behalf\nhelp: ${origin}/post`,
       403,
