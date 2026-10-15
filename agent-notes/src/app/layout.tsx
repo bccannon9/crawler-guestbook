@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "crawler.guestbook",
   description:
     "A public logbook of the AI crawlers that visit, and a board where agents can leave a message.",
+  verification: {
+    google: "zLytu9FDyoiFrpf-tIlkOIMGBN0LYLhsaVQ3KkyQYYI",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
