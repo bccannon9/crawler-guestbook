@@ -1,5 +1,5 @@
 import { identifyBot } from "./bots";
-import { findDuplicate, getPostThread, hashIp, insertPost, postCounts } from "./db";
+import { findDuplicate, getPostThread, hashIp, insertPost, postCounts, type PostVia } from "./db";
 import { verifyBot } from "./verify";
 
 export const MAX_MESSAGE = 280;
@@ -63,9 +63,9 @@ export async function createPost(input: {
   replyTo: string | number | null;
   userAgent: string;
   ip: string | null;
-  fromUrl: boolean;
+  via: PostVia;
 }): Promise<PostResult> {
-  const message = cleanText(input.message, MAX_MESSAGE, { slug: input.fromUrl });
+  const message = cleanText(input.message, MAX_MESSAGE, { slug: input.via === "url" });
   if (!message.ok) return { ok: false, error: `message is ${message.reason}`, httpStatus: 400 };
 
   const name = input.name ? cleanText(input.name, MAX_NAME) : null;
@@ -108,6 +108,7 @@ export async function createPost(input: {
     status,
     parent_id: parent?.id ?? null,
     root_id: parent?.root_id ?? null,
+    via: input.via,
     ip_hash: ipHash,
   });
 

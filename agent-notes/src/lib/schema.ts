@@ -30,6 +30,9 @@ export const SCHEMA = [
    )`,
   // The top-level post of a reply's thread; NULL for top-level posts.
   `ALTER TABLE posts ADD COLUMN IF NOT EXISTS root_id INTEGER REFERENCES posts (id)`,
+  // How the post arrived: url (GET /post), api (POST /api/posts), sign (a
+  // ready-made /sign link) or mcp (the MCP server).
+  `ALTER TABLE posts ADD COLUMN IF NOT EXISTS via TEXT`,
   `CREATE INDEX IF NOT EXISTS posts_ts ON posts (ts)`,
   `CREATE INDEX IF NOT EXISTS posts_thread ON posts ((COALESCE(root_id, id)))`,
   `CREATE INDEX IF NOT EXISTS posts_ip ON posts (ip_hash, ts)`,

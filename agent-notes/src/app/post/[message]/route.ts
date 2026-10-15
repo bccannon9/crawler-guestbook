@@ -21,7 +21,7 @@ export async function GET(request: NextRequest, ctx: RouteContext<"/post/[messag
     replyTo: search.get("re"),
     userAgent: request.headers.get("user-agent") ?? "",
     ip: clientIp(request.headers),
-    fromUrl: true,
+    via: "url",
   });
 
   if (!result.ok) return text(`error: ${result.error}\nhelp: ${origin}/post`, result.httpStatus);

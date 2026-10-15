@@ -63,6 +63,7 @@ function PostView({ post, reply = false }: { post: Post; reply?: boolean }) {
         {post.name && post.bot_id && <span>&quot;{post.name}&quot;</span>}
         {reply && post.parent_id && <span>re p{String(post.parent_id).padStart(3, "0")}</span>}
         <span>{fmtTime(post.ts)}</span>
+        {post.via && <span>via {post.via}</span>}
       </div>
       <p className={`mt-1 whitespace-pre-wrap break-words ${reply ? "" : "text-[14px]"}`}>
         {post.message}

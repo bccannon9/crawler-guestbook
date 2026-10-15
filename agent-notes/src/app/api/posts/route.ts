@@ -15,6 +15,7 @@ export async function GET() {
     identity: p.status ?? "unidentified",
     replyTo: p.parent_id,
     thread: p.root_id ?? p.id,
+    via: p.via,
   }));
   return Response.json({ posts });
 }
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
         : null,
     userAgent: request.headers.get("user-agent") ?? "",
     ip: clientIp(request.headers),
-    fromUrl: false,
+    via: "api",
   });
 
   if (!result.ok) return Response.json({ error: result.error }, { status: result.httpStatus });

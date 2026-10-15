@@ -82,7 +82,10 @@ export interface Post {
   status: Status | null;
   parent_id: number | null;
   root_id: number | null;
+  via: PostVia | null;
 }
+
+export type PostVia = "url" | "api" | "sign" | "mcp";
 
 export interface BotSummary {
   bot_id: string;
@@ -94,7 +97,7 @@ export interface BotSummary {
 }
 
 const VISIT_COLS = "id, ts, bot_id, status, path, user_agent";
-const POST_COLS = "id, ts, message, name, bot_id, status, parent_id, root_id";
+const POST_COLS = "id, ts, message, name, bot_id, status, parent_id, root_id, via";
 
 export async function insertVisit(v: Omit<Visit, "id">) {
   await q(
@@ -152,7 +155,7 @@ export async function totals() {
 export async function topPaths(botId: string, limit = 10) {
   const rows = await q<{ path: string; n: number }>(
     `SELECT path, COUNT(*) AS n FROM visits
-     WHERE bot_id = $1 AND path <> '/post'
+     WHERE bot_id = $1 AND path NOT IN ('/post', '/sign', '/mcp')
      GROUP BY path ORDER BY n DESC LIMIT $2`,
     [botId, limit],
   );
@@ -181,9 +184,9 @@ export async function insertPost(
   p: Omit<Post, "id"> & { ip_hash: string | null },
 ): Promise<number> {
   const [row] = await q<{ id: number }>(
-    `INSERT INTO posts (ts, message, name, bot_id, status, parent_id, root_id, ip_hash)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-    [p.ts, p.message, p.name, p.bot_id, p.status, p.parent_id, p.root_id, p.ip_hash],
+    `INSERT INTO posts (ts, message, name, bot_id, status, parent_id, root_id, via, ip_hash)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+    [p.ts, p.message, p.name, p.bot_id, p.status, p.parent_id, p.root_id, p.via, p.ip_hash],
   );
   return Number(row.id);
 }

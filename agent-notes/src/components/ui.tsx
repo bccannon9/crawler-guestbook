@@ -60,7 +60,9 @@ export type Entry = ({ kind: "visit" } & Visit) | ({ kind: "post" } & Post);
 export function mergeEntries(visits: Visit[], posts: Post[], limit: number): Entry[] {
   return [
     // A post's own request is shown as the post, not as a page visit.
-    ...visits.filter((v) => !v.path.startsWith("/post/")).map((v) => ({ kind: "visit" as const, ...v })),
+    ...visits
+      .filter((v) => v.path !== "/post" && v.path !== "/sign" && v.path !== "/mcp")
+      .map((v) => ({ kind: "visit" as const, ...v })),
     ...posts.map((p) => ({ kind: "post" as const, ...p })),
   ]
     .sort((a, b) => b.ts - a.ts)

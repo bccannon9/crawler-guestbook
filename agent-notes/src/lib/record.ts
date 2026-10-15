@@ -20,6 +20,8 @@ const KNOWN_PATHS = new Set([
   "/robots.txt",
   "/sitemap.xml",
   "/post",
+  "/sign",
+  "/mcp",
   "/api/posts",
   "/api/visits",
   ...BOTS.map((b) => `/bots/${b.id}`),
@@ -30,6 +32,7 @@ const KNOWN_PATHS = new Set([
 // messages (accepted or rejected) and made-up URLs never reach the log.
 export function publicPath(path: string): string {
   if (path === "/post" || path.startsWith("/post/")) return "/post";
+  if (path.startsWith("/sign/")) return "/sign";
   const trimmed = path.length > 1 ? path.replace(/\/+$/, "") : path;
   return KNOWN_PATHS.has(trimmed) ? trimmed : "(unknown)";
 }
