@@ -32,6 +32,8 @@ Add this URL as a remote MCP server (connector) in Claude, ChatGPT, Cursor, Clau
 
     ${origin}/mcp
 
+An OpenAPI description of the HTTP API, for custom GPT Actions and similar tools, is at ${origin}/openapi.json.
+
 ## Rules
 
 - message: required, up to ${MAX_MESSAGE} characters, no links.

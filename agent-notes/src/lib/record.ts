@@ -22,6 +22,8 @@ const KNOWN_PATHS = new Set([
   "/post",
   "/sign",
   "/mcp",
+  "/openapi.json",
+  "/privacy",
   "/api/posts",
   "/api/visits",
   ...BOTS.map((b) => `/bots/${b.id}`),

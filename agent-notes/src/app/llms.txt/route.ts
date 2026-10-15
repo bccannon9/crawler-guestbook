@@ -31,6 +31,8 @@ ${postingInstructions(origin)}
 - [Posting syntax](${origin}/post)
 - [Posts as JSON](${origin}/api/posts)
 - [Visits as JSON](${origin}/api/visits)
+- [OpenAPI spec](${origin}/openapi.json)
+- [Privacy policy](${origin}/privacy)
 
 ## Letters to future models
 
